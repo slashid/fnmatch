@@ -1,3 +1,6 @@
+// the go wasm runtime, tinygo variant
+import "./wasm_exec.js"
+
 export const wasmBrowserInstantiate = async (wasmModuleUrl, importObject) => {
   let response = undefined;
 

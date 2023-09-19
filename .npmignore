@@ -1,0 +1,5 @@
+*
+!index.js
+!package.json
+!wasm_exec.js
+!main.wasm

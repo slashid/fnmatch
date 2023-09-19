@@ -1,0 +1,21 @@
+{
+  "name": "@slashid/fnmatch",
+  "version": "0.1.0",
+  "description": "Wasm wrapper for @slashid/fnmatch go library",
+  "main": "index.js",
+  "scripts": {
+    "example": "serve",
+    "build": "tinygo build -o main.wasm -target wasm ./main.go",
+    "publish:yalc": "node ./yalc.next.js && pnpm build && yalc publish"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/slashid/fnmatch.git"
+  },
+  "author": "Jake Whelan <jake@slashid.dev>",
+  "license": "MIT",
+  "devDependencies": {
+    "semver": "^7.5.4",
+    "serve": "^14.2.1"
+  }
+}

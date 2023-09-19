@@ -25,3 +25,8 @@ _testmain.go
 
 main.wasm
 node_modules
+.DS_Store
+.yalc
+yalc.lock
+yalc.sig
+dist

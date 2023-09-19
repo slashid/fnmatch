@@ -1,74 +1,53 @@
-// the go wasm runtime, tinygo variant
-import "./wasm_exec.js"
-
-export const wasmBrowserInstantiate = async (wasmModuleUrl, importObject) => {
-  let response = undefined;
-
-  if (WebAssembly.instantiateStreaming) {
-    response = await WebAssembly.instantiateStreaming(
-      fetch(wasmModuleUrl),
-      importObject
-    );
-  } else {
-    const fetchAndInstantiateTask = async () => {
-      const wasmArrayBuffer = await fetch(wasmModuleUrl).then((response) =>
-        response.arrayBuffer()
-      );
-      return WebAssembly.instantiate(wasmArrayBuffer, importObject);
-    };
-
-    response = await fetchAndInstantiateTask();
-  }
-
-  return response;
-};
+import wasm from "./main.wasm"
 
 const encodeString = (name, instance) => {
   const bytes = new TextEncoder("utf8").encode(name);
-  const ptr = instance.exports.alloc(bytes.length);
-  const mem = new Uint8Array(instance.exports.memory.buffer, ptr, bytes.length);
+  const pointer = instance.exports.alloc(bytes.length);
+  const mem = new Uint8Array(instance.exports.memory.buffer, pointer, bytes.length);
   mem.set(new Uint8Array(bytes));
 
   return {
-    ptr: ptr,
+    pointer: pointer,
     length: bytes.length,
   };
 };
 
-const go = new Go();
+const createFnmatch = async () => {
+  const go = new Go();
+  const instance = wasm(go.importObject)
 
-const load = async () => {
-  const wasmModule = await wasmBrowserInstantiate(
-    "./main.wasm",
-    go.importObject
-  );
-
-  go.run(wasmModule.instance);
+  go.run(instance); 
 
   return {
+    /** @type {(pattern: string, s: string, flags: number) => boolean} */
     Match: (pattern, s, flags) => {
-      const _pattern = encodeString(pattern, wasmModule.instance);
-      const _s = encodeString(s, wasmModule.instance);
+      const _pattern = encodeString(pattern, instance);
+      const _s = encodeString(s, instance);
       return Boolean(
-        wasmModule.instance.exports.Match(
-          _pattern.ptr,
+        instance.exports.Match(
+          _pattern.pointer,
           _pattern.length,
-          _s.ptr,
+          _s.pointer,
           _s.length,
           flags
         )
       );
     },
-    FNM_NOESCAPE: wasmModule.instance.exports._FNM_NOESCAPE(),
-    FNM_PATHNAME: wasmModule.instance.exports._FNM_PATHNAME(),
-    FNM_PERIOD: wasmModule.instance.exports._FNM_PERIOD(),
-    FNM_LEADING_DIR: wasmModule.instance.exports._FNM_LEADING_DIR(),
-    FNM_CASEFOLD: wasmModule.instance.exports._FNM_CASEFOLD(),
-    FNM_IGNORECASE: wasmModule.instance.exports._FNM_IGNORECASE(),
-    FNM_FILE_NAME: wasmModule.instance.exports._FNM_FILE_NAME(),
-  };
+    /** @type {number} */
+    FNM_NOESCAPE: instance.exports._FNM_NOESCAPE(),
+    /** @type {number} */
+    FNM_PATHNAME: instance.exports._FNM_PATHNAME(),
+    /** @type {number} */
+    FNM_PERIOD: instance.exports._FNM_PERIOD(),
+    /** @type {number} */
+    FNM_LEADING_DIR: instance.exports._FNM_LEADING_DIR(),
+    /** @type {number} */
+    FNM_CASEFOLD: instance.exports._FNM_CASEFOLD(),
+    /** @type {number} */
+    FNM_IGNORECASE: instance.exports._FNM_IGNORECASE(),
+    /** @type {number} */
+    FNM_FILE_NAME: instance.exports._FNM_FILE_NAME()
+  }
 };
 
-export const fnmatch = await load();
-
-window.fnmatch = fnmatch
+export const fnmatch = await createFnmatch();

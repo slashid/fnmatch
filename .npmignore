@@ -1,0 +1,7 @@
+*
+# !index.js
+!package.json
+!wasm_exec.js
+# !main.wasm
+!dist/index.js
+!dist/index.d.ts

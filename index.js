@@ -14,7 +14,7 @@ const encodeString = (name, instance) => {
 
 const createFnmatch = async () => {
   const go = new Go();
-  const instance = wasm(go.importObject)
+  const { instance } = await wasm(go.importObject)
 
   go.run(instance); 
 

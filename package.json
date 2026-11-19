@@ -1,6 +1,6 @@
 {
   "name": "@slashid/fnmatch",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Wasm wrapper for @slashid/fnmatch go library",
   "type": "module",
   "main": "dist/index.js",
@@ -10,7 +10,8 @@
     "types": "tsc index.js --declaration --allowJs --emitDeclarationOnly --outDir dist",
     "go": "tinygo build -o main.wasm -target wasm ./main.go",
     "build": "npm run go && rollup -c rollup.config.js && npm run types",
-    "publish:yalc": "node ./yalc.next.js && pnpm build && yalc publish"
+    "publish:yalc": "node ./yalc.next.js && pnpm build && yalc publish",
+    "test": "node --test test/"
   },
   "repository": {
     "type": "git",

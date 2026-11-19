@@ -7,6 +7,7 @@ export default {
     format: 'es'
   },
   plugins: [wasm({
-    targetEnv: "auto-inline"
+    targetEnv: "auto-inline",
+    sync: ["main.wasm"]
   })]
 };

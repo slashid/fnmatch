@@ -34,6 +34,11 @@ fnmatch.Match("*yes.com", "hello@yes.com", fnmatch.FNM_CASEFOLD) // true
 fnmatch.Match("*yes.com", "hello@no.com", fnmatch.FNM_CASEFOLD) // false
 ```
 
+The wasm module is loaded lazily, on the first call to `fnmatch.Match()` (or the first read of an `FNM_*`
+flag), so importing this package has no side effects and needs no top-level `await` support from your bundler.
+The first call instantiates the module synchronously (about 4 ms), so `wasm_exec.js` only has to be loaded
+before that first call. If it is not, the call throws, and a later call retries.
+
 ### Contributing
 
 #### Build
